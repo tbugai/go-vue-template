@@ -1,7 +1,14 @@
-TARGET = "server"
+NODE_BIN = $(shell npm bin)
+
+IMPORT_PATH = $(shell echo `pwd` | sed "s|^$(GOPATH)/src/||g")
+TARGET = $(shell echo $(IMPORT_PATH) | sed 's:.*/::')
+PID = $(TARGET).pid
+
 GO_FILES = $(shell find . -type f -name "*.go")
 ASSETS = $(shell find assets -type f)
-PID = .pid
+
+FRONTEND_PORT ?= 8000
+BACKEND_PORT ?= 9000
 
 build: clean $(BUNDLE) $(TARGET)
 
@@ -17,10 +24,11 @@ kill:
 	@kill `cat $(PID)` || true
 
 dev: clean restart
+	FRONTEND_PORT=$(FRONTEND_PORT) BACKEND_PORT=$(BACKEND_PORT) $(NODE_BIN)/webpack-dev-server --config webpack.config.js &
 	@printf "\n\nWaiting for the file change\n\n"
 	@fswatch --event=Updated $(GO_FILES) | xargs -n1 -I{} make restart || make kill
 
 restart: kill $(TARGET)
 	@printf "\n\nrestart the app .........\n\n"
-	@./$(TARGET) -debug & echo $$! > $(PID)
+	@./$(TARGET) -port $(BACKEND_PORT) -debug & echo $$! > $(PID)
 

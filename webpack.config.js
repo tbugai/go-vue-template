@@ -77,8 +77,13 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    noInfo: true,
-    overlay: true
+    inline: true,
+    overlay: true,
+    progress: true,
+    proxy: {
+      '/api': "http://localhost:" + process.env.BACKEND_PORT || 9000
+    },
+    port: process.env.FRONTEND_PORT || 8000
   },
   performance: {
     hints: false
