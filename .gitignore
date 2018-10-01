@@ -5,6 +5,7 @@ npm-debug.log
 yarn-error.log
 server
 *.pid
+app.js*
 
 # Editor directories and files
 .idea

@@ -76,14 +76,17 @@ module.exports = {
     extensions: ['*', '.js', '.vue', '.json']
   },
   devServer: {
-    historyApiFallback: true,
     inline: true,
     overlay: true,
     progress: true,
-    proxy: {
-      '/api': "http://localhost:" + process.env.BACKEND_PORT || 9000
-    },
-    port: process.env.FRONTEND_PORT || 8000
+    proxy: [{
+      path: (path) => {
+        return path.match(/^(?!.*hot-update\.js)(.*)$/g)
+      },
+      target: "http://localhost:9000"
+    }],
+    port: process.env.FRONTEND_PORT || 8000,
+    historyApiFallback: true
   },
   performance: {
     hints: false
